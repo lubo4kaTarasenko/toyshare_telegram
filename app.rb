@@ -5,6 +5,8 @@ require 'net/http'
 
 token = ENV['TELEGRAM_TOYSHARE_TOKEN']
 
+puts "[#{Time.now}] started"
+
 Telegram::Bot::Client.run(token) do |bot|
   bot.listen do |message|
     if message.text.start_with?('/start')
