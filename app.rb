@@ -15,6 +15,8 @@ Telegram::Bot::Client.run(token) do |bot|
       data = { email: email, chat_id: message.chat.id }
 
       uri = URI("#{ENV['TOYSHARE_URL']}/telegram_webhook")
+      res = Net::HTTP.post_form(uri, *data)
+      puts res.body
     end
   end
 end
