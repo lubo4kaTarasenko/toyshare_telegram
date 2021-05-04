@@ -3,26 +3,15 @@ require 'base64'
 require 'pry'
 require 'net/http'
 
-token = ENV['TELEGRAM_TOYSHARE_TOKEN']
+require_relative 'app/config'
+require_relative 'app/logger'
+require_relative 'app/webhook'
+require_relative 'app/message_handler'
 
-puts "[#{Time.now}] started"
+Logger.info('App started')
 
-Telegram::Bot::Client.run(token) do |bot|
+Telegram::Bot::Client.run(Config.token) do |bot|
   bot.listen do |message|
-    if message.respond_to?(:text)
-      puts message
-
-      if message.text.start_with?('/start')
-        email = Base64.decode64(message.text.split('/start').join.strip)
-        bot.api.send_message(chat_id: message.chat.id, text: "Hi, #{message.from.first_name} (#{email})") rescue nil
-  
-        puts email
-        uri = URI("#{ENV['TOYSHARE_URL']}/telegram_webhook")
-        #res = Net::HTTP.post_form(uri, email: email, chat_id: message.chat.id)
-        #puts res.code
-      end
-    else 
-      true  
-    end
+    MessageHandler.call(bot, message)
   end
 end
